@@ -5,6 +5,8 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -19,6 +21,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.sample.sayan.architecturalcomponentssample.databinding.ActivityMainBinding;
+
 import java.util.List;
 
 //https://developer.android.com/topic/libraries/architecture/adding-components#room
@@ -31,11 +35,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        wordAdapter = new WordAdapter(MainActivity.this, null);
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-        recyclerView.setAdapter(wordAdapter);
+        ActivityMainBinding viewDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        if (layoutInflater != null){
+            wordAdapter = new WordAdapter(MainActivity.this, null, layoutInflater);
+            viewDataBinding.recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+            viewDataBinding.recyclerView.setAdapter(wordAdapter);
+        }
+
         mWordViewModel = ViewModelProviders.of(this).get(WordViewModel.class);
 //        mWordViewModel.deleteAll();
         mWordViewModel.getmAllWords().observe(this, new Observer<List<Word>>() {
@@ -68,57 +75,4 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.setTitle("Enter a Word");
         alertDialog.show();
     }
-
-    private class WordAdapter extends RecyclerView.Adapter<WordViewHolder> {
-
-        private Context context;
-        private List<Word> words;
-
-        public WordAdapter(Context context, List<Word> words) {
-            this.context = context;
-            this.words = words;
-        }
-
-        @NonNull
-        @Override
-        public WordViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-            View view = layoutInflater.inflate(R.layout.word_child, null, false);
-            return new WordViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull WordViewHolder holder, int position) {
-            holder.setData(words.get(position));
-        }
-
-        @Override
-        public int getItemCount() {
-            if (words != null){
-                return words.size();
-            }else {
-                return 0;
-            }
-        }
-
-        public void refresh(List<Word> words) {
-            this.words = words;
-            notifyDataSetChanged();
-        }
-    }
-
-    private class WordViewHolder extends RecyclerView.ViewHolder {
-
-        private final TextView wordTextView;
-
-        public WordViewHolder(View itemView) {
-            super(itemView);
-            wordTextView = itemView.findViewById(R.id.wordTextView);
-        }
-
-        public void setData(Word word) {
-            wordTextView.setText(word.getWord());
-        }
-    }
-
 }
