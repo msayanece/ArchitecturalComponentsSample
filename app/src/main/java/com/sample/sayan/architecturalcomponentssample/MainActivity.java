@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         ActivityMainBinding viewDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         if (layoutInflater != null){
-            wordAdapter = new WordAdapter(MainActivity.this, null, layoutInflater);
+            wordAdapter = new WordAdapter(null, layoutInflater);
             viewDataBinding.recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
             viewDataBinding.recyclerView.setAdapter(wordAdapter);
         }

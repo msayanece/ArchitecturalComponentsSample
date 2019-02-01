@@ -1,6 +1,8 @@
 package com.sample.sayan.architecturalcomponentssample;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,17 +10,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.sample.sayan.architecturalcomponentssample.databinding.WordChildBinding;
+
 import java.util.List;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder>  {
-    private Context context;
     private List<Word> words;
     private LayoutInflater layoutInflater;
 
-    public WordAdapter(Context context, List<Word> words, LayoutInflater layoutInflater) {
-        this.context = context;
+    public WordAdapter(List<Word> words, LayoutInflater layoutInflater) {
         this.words = words;
         this.layoutInflater = layoutInflater;
     }
@@ -26,8 +28,8 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     @NonNull
     @Override
     public WordViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = layoutInflater.inflate(R.layout.word_child, parent, false);
-        return new WordViewHolder(view);
+        WordChildBinding wordChildBinding = DataBindingUtil.inflate(layoutInflater, R.layout.word_child, parent, false);
+        return new WordViewHolder(wordChildBinding);
     }
 
     @Override
@@ -51,15 +53,16 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
     static class WordViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView wordTextView;
+        private WordChildBinding wordChildBinding;
 
-        public WordViewHolder(View itemView) {
-            super(itemView);
-            wordTextView = itemView.findViewById(R.id.wordTextView);
+        WordViewHolder(WordChildBinding wordChildBinding) {
+            super(wordChildBinding.getRoot());
+            this.wordChildBinding = wordChildBinding;
         }
 
-        public void setData(Word word) {
-            wordTextView.setText(word.getWord());
+        void setData(Word word) {
+            wordChildBinding.setWordData(word);
+            wordChildBinding.executePendingBindings();
         }
     }
 }
